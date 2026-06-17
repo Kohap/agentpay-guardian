@@ -11,7 +11,7 @@ import { demoAgent } from "@/lib/demo-data";
 export async function POST() {
   await resetAuditEvents();
 
-  const apass = await generateApassWithRetry();
+  const apass = await generateApassWithRetry(true);
   await addAuditEvent({
     label: "A-Pass generated",
     detail: apass.mocked
@@ -28,7 +28,7 @@ export async function POST() {
     source: "demo",
   });
 
-  const rules = await queryApassRules();
+  const rules = await queryApassRules(true);
   await addAuditEvent({
     label: "A-Token permission checked",
     detail: rules.mocked
@@ -38,7 +38,7 @@ export async function POST() {
     source: rules.mocked ? "demo" : "cleanverse",
   });
 
-  const paused = await queryApassPaused();
+  const paused = await queryApassPaused(true);
   await addAuditEvent({
     label: "A-Token pause status checked",
     detail: paused.mocked

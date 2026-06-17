@@ -68,7 +68,7 @@ async function cleanverseCall<T>(
     message: response.statusText,
   }));
 
-  if (!response.ok && options.allowMock) {
+  if (options.allowMock && (!response.ok || json.code !== "0000")) {
     return {
       ok: true,
       mocked: true,
@@ -91,7 +91,7 @@ async function cleanverseCall<T>(
   };
 }
 
-export function generateApass(override = false) {
+export function generateApass(override = false, allowMock = false) {
   const body = {
     customerId: demoAgent.customerId,
     kycSource: "AGENTPAY_GUARDIAN_DEMO",
@@ -130,21 +130,21 @@ export function generateApass(override = false) {
         txHash: demoAgent.transactionHash,
       },
     },
-    { encrypted: true }
+    { encrypted: true, allowMock }
   );
 }
 
-export async function generateApassWithRetry() {
-  const first = await generateApass(false);
+export async function generateApassWithRetry(allowMock = false) {
+  const first = await generateApass(false, allowMock);
 
   if (first.response.code === "1000") {
-    return generateApass(true);
+    return generateApass(true, allowMock);
   }
 
   return first;
 }
 
-export function queryApassRules() {
+export function queryApassRules(allowMock = false) {
   return cleanverseCall(
     "/atoken/rules",
     {
@@ -162,11 +162,12 @@ export function queryApassRules() {
         },
       ],
       atoken_address: demoAgent.atokenAddress,
-    }
+    },
+    { allowMock }
   );
 }
 
-export function queryApassPaused() {
+export function queryApassPaused(allowMock = false) {
   return cleanverseCall(
     "/atoken/is_paused",
     {
@@ -177,7 +178,8 @@ export function queryApassPaused() {
       chain: demoAgent.chain,
       paused: false,
       atoken_address: demoAgent.atokenAddress,
-    }
+    },
+    { allowMock }
   );
 }
 
