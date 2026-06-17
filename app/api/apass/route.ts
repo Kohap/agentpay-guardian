@@ -5,7 +5,7 @@ import { generateApassWithRetry } from "@/lib/cleanverse";
 export async function POST() {
   const result = await generateApassWithRetry();
 
-  addAuditEvent({
+  await addAuditEvent({
     label: "A-Pass generated",
     detail: result.mocked
       ? "Identity verified with demo A-Pass response."

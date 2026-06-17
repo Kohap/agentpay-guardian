@@ -18,6 +18,7 @@ import {
   cleanverseIntegrations,
   demoAgent,
 } from "@/lib/demo-data";
+import { RunFullDemoButton } from "@/components/run-full-demo";
 
 const steps = [
   ["Start Demo", "Launch the compliance flow for PayBot Alpha."],
@@ -60,6 +61,7 @@ export default function Home() {
           />
           <div className="flex flex-wrap gap-3">
             <PrimaryLink href="/verification">Start Compliance Demo</PrimaryLink>
+            <RunFullDemoButton />
             <StatusPill ok label="Server-side Cleanverse routes" />
           </div>
         </div>

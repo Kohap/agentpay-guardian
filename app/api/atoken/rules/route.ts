@@ -5,7 +5,7 @@ import { queryApassRules } from "@/lib/cleanverse";
 export async function POST() {
   const result = await queryApassRules();
 
-  addAuditEvent({
+  await addAuditEvent({
     label: "A-Token permission checked",
     detail: result.mocked
       ? "Transaction within allowed A-Token rule."

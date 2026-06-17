@@ -5,7 +5,7 @@ import { queryApassPaused } from "@/lib/cleanverse";
 export async function POST() {
   const result = await queryApassPaused();
 
-  addAuditEvent({
+  await addAuditEvent({
     label: "A-Token pause status checked",
     detail: result.mocked
       ? "A-Token status returned active in the demo."

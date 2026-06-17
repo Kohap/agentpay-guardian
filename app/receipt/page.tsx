@@ -2,20 +2,29 @@ import { ReceiptText } from "lucide-react";
 import { AppShell } from "@/components/shell";
 import { PageHeader, Panel, PrimaryLink, StatusPill } from "@/components/ui";
 import { demoAgent } from "@/lib/demo-data";
+import { findLatestAuditEvent } from "@/lib/audit-store";
 
-const receiptRows = [
-  ["Agent name", demoAgent.agentName],
-  ["Recipient", demoAgent.merchant],
-  ["Amount", `${demoAgent.amount} ${demoAgent.currency}`],
-  ["Purpose", demoAgent.purpose],
-  ["Compliance result", "Passed"],
-  ["A-Token authorization", "Valid"],
-  ["Monad transaction hash", demoAgent.transactionHash],
-  ["Timestamp", new Date().toLocaleString()],
-  ["Final status", "Payment Authorized"],
-];
+export const dynamic = "force-dynamic";
 
-export default function ReceiptPage() {
+export default async function ReceiptPage() {
+  const approvalEvent = await findLatestAuditEvent("Payment authorized");
+  const receiptRows = [
+    ["Agent name", demoAgent.agentName],
+    ["Recipient", demoAgent.merchant],
+    ["Amount", `${demoAgent.amount} ${demoAgent.currency}`],
+    ["Purpose", demoAgent.purpose],
+    ["Compliance result", approvalEvent ? "Passed" : "Pending"],
+    ["A-Token authorization", approvalEvent ? "Valid" : "Pending"],
+    ["Monad transaction hash", approvalEvent ? demoAgent.transactionHash : "Pending approval"],
+    [
+      "Timestamp",
+      approvalEvent
+        ? new Date(approvalEvent.timestamp).toLocaleString()
+        : "Run approval or full demo first",
+    ],
+    ["Final status", approvalEvent ? "Payment Authorized" : "Awaiting Approval"],
+  ];
+
   return (
     <AppShell currentStep={4}>
       <PageHeader
@@ -36,7 +45,11 @@ export default function ReceiptPage() {
               <p className="text-sm text-slate-400">{demoAgent.agentId}</p>
             </div>
           </div>
-          <StatusPill ok label="Final status: Authorized" />
+          <StatusPill
+            ok={Boolean(approvalEvent)}
+            label={approvalEvent ? "Final status: Authorized" : "Final status: Pending"}
+            tone={approvalEvent ? "success" : "warning"}
+          />
         </div>
         <div className="grid gap-3 md:grid-cols-2">
           {receiptRows.map(([label, value]) => (

@@ -2,17 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { addAuditEvent, getAuditEvents, resetAuditEvents } from "@/lib/audit-store";
 
 export async function GET() {
-  return NextResponse.json({ events: getAuditEvents() });
+  return NextResponse.json({ events: await getAuditEvents() });
 }
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
 
   if (body.action === "reset") {
-    return NextResponse.json({ events: resetAuditEvents() });
+    return NextResponse.json({ events: await resetAuditEvents() });
   }
 
-  const event = addAuditEvent({
+  const event = await addAuditEvent({
     label: body.label ?? "Payment requested",
     detail:
       body.detail ??

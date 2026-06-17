@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
+import { RunFullDemoButton } from "@/components/run-full-demo";
 
 const navItems = [
   ["Verify", "/verification"],
@@ -51,6 +52,16 @@ export function AppShell({
           </nav>
         </div>
       </header>
+      <section className="border-b border-amber-300/20 bg-amber-300/10">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-3 text-sm text-amber-50 md:flex-row md:items-center md:justify-between">
+          <p>
+            <span className="font-semibold">Demo mode active:</span> Cleanverse
+            calls use live API when credentials exist; audit + Monad receipt are
+            simulated.
+          </p>
+          <RunFullDemoButton />
+        </div>
+      </section>
       <div className="mx-auto max-w-7xl px-5 py-8">
         {currentStep && (
           <div className="mb-8 overflow-x-auto rounded-lg border border-white/10 bg-white/[0.03] p-3">

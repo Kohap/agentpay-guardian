@@ -6,7 +6,7 @@ export async function POST() {
   const result = await verifyValidatorCompliance();
   const valid = Boolean(result.response.data?.valid);
 
-  addAuditEvent({
+  await addAuditEvent({
     label: "Compliance checked",
     detail: valid
       ? "Travel Rule and AML checks passed; validator confirmed wallet eligibility."
@@ -16,13 +16,13 @@ export async function POST() {
   });
 
   if (result.ok && valid) {
-    addAuditEvent({
+    await addAuditEvent({
       label: "Payment authorized",
       detail: "Payment request met identity, token, amount, and validator checks.",
       status: "success",
       source: result.mocked ? "demo" : "cleanverse",
     });
-    addAuditEvent({
+    await addAuditEvent({
       label: "Monad transaction record simulated",
       detail: "Transaction hash 0xmonad-agentpay-guardian generated.",
       status: "info",
