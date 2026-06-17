@@ -74,10 +74,28 @@ export async function POST() {
     });
   }
 
-  return NextResponse.json({
+  const events = await getAuditEvents();
+  const approvalEvent = events.find((event) => event.label === "Payment authorized");
+  const response = NextResponse.json({
     ok: validator.ok && valid,
     steps: { apass, rules, paused, validator },
-    events: await getAuditEvents(),
+    events,
     next: "/audit",
   });
+
+  if (approvalEvent) {
+    response.cookies.set(
+      "agentpay_guardian_receipt",
+      approvalEvent.timestamp,
+      {
+        httpOnly: false,
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      }
+    );
+  }
+
+  return response;
 }

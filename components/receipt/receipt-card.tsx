@@ -20,17 +20,33 @@ function chooseEvents(serverEvents: AuditEvent[]) {
   return shouldUseBrowserEvents ? parsedBrowserEvents : serverEvents;
 }
 
-export function ReceiptCard() {
-  const [approvalEvent, setApprovalEvent] = useState<AuditEvent | null>(null);
+export function ReceiptCard({
+  initialApprovalTimestamp,
+}: {
+  initialApprovalTimestamp?: string;
+}) {
+  const [approvalEvent, setApprovalEvent] = useState<AuditEvent | null>(
+    initialApprovalTimestamp
+      ? {
+          id: "receipt-cookie",
+          label: "Payment authorized",
+          detail: "Payment request met identity, token, amount, and validator checks.",
+          status: "success",
+          timestamp: initialApprovalTimestamp,
+          source: "demo",
+        }
+      : null
+  );
 
   useEffect(() => {
     async function loadReceipt() {
       const response = await fetch("/api/audit", { cache: "no-store" });
       const json = await response.json();
       const events = chooseEvents(json.events as AuditEvent[]);
-      setApprovalEvent(
-        events.find((event) => event.label === "Payment authorized") ?? null
-      );
+      const event = events.find((item) => item.label === "Payment authorized");
+      if (event) {
+        setApprovalEvent(event);
+      }
     }
 
     loadReceipt();
