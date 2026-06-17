@@ -4,7 +4,7 @@ import { PageHeader, Panel } from "@/components/ui";
 
 export default function AuditPage() {
   return (
-    <AppShell>
+    <AppShell currentStep={5}>
       <PageHeader
         eyebrow="Step 5"
         title="Audit Trail"

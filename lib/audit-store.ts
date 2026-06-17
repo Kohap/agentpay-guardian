@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 
-export type AuditStatus = "info" | "success" | "warning" | "error";
+export type AuditStatus = "info" | "success" | "warning" | "error" | "pending";
 
 export type AuditEvent = {
   id: string;
@@ -19,8 +19,8 @@ function initialEvents(): AuditEvent[] {
   return [
     {
       id: randomUUID(),
-      label: "Agent created",
-      detail: "PayBot Alpha was registered as AGENT001GIFT for the demo flow.",
+      label: "Agent profile loaded",
+      detail: "PayBot Alpha initialized with a $2,000 transaction limit.",
       status: "success",
       timestamp: new Date().toISOString(),
       source: "demo",

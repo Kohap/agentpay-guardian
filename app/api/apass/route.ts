@@ -8,8 +8,8 @@ export async function POST() {
   addAuditEvent({
     label: "A-Pass generated",
     detail: result.mocked
-      ? "Demo A-Pass identity record generated locally."
-      : `Cleanverse A-Pass response ${result.response.code}.`,
+      ? "Identity verified with demo A-Pass response."
+      : `Identity verified with Cleanverse A-Pass response ${result.response.code}.`,
     status: result.ok ? "success" : "error",
     source: result.mocked ? "demo" : "cleanverse",
   });

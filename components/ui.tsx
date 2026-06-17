@@ -1,5 +1,20 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Clock3,
+  Loader2,
+  XCircle,
+} from "lucide-react";
+
+type Tone = "success" | "warning" | "error" | "info";
+
+const toneClasses: Record<Tone, string> = {
+  success: "border-emerald-400/40 bg-emerald-400/10 text-emerald-200",
+  warning: "border-amber-400/40 bg-amber-400/10 text-amber-200",
+  error: "border-rose-400/40 bg-rose-400/10 text-rose-200",
+  info: "border-sky-400/40 bg-sky-400/10 text-sky-200",
+};
 
 export function PageHeader({
   eyebrow,
@@ -49,19 +64,42 @@ export function PrimaryLink({
   );
 }
 
-export function StatusPill({ ok, label }: { ok: boolean; label: string }) {
+export function StatusPill({
+  ok,
+  label,
+  tone,
+}: {
+  ok?: boolean;
+  label: string;
+  tone?: Tone;
+}) {
+  const resolvedTone = tone ?? (ok ? "success" : "info");
+  const Icon =
+    resolvedTone === "error"
+      ? XCircle
+      : resolvedTone === "warning"
+        ? Clock3
+        : CheckCircle2;
+
   return (
     <span
-      className={`inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-medium ${
-        ok
-          ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-200"
-          : "border-slate-400/30 bg-white/5 text-slate-300"
-      }`}
+      className={`inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-medium ${toneClasses[resolvedTone]}`}
     >
-      <CheckCircle2 className="h-3.5 w-3.5" />
+      <Icon className="h-3.5 w-3.5" />
       {label}
     </span>
   );
+}
+
+export function ApiLabel({ label }: { label: string }) {
+  const tone =
+    label === "Real Cleanverse API Call"
+      ? "success"
+      : label === "Pending API Integration"
+        ? "warning"
+        : "info";
+
+  return <StatusPill label={label} tone={tone} />;
 }
 
 export function LoadingButton({

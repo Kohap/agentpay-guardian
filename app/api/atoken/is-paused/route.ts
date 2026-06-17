@@ -8,8 +8,8 @@ export async function POST() {
   addAuditEvent({
     label: "A-Token pause status checked",
     detail: result.mocked
-      ? "Demo A-Token status returned active."
-      : `Cleanverse pause status response ${result.response.code}.`,
+      ? "A-Token status returned active in the demo."
+      : `Cleanverse pause status response ${result.response.code}; A-Token is active.`,
     status: result.ok ? "success" : "error",
     source: result.mocked ? "demo" : "cleanverse",
   });

@@ -1,14 +1,51 @@
-import { Bot, FileCheck2, Landmark, ShieldCheck } from "lucide-react";
+import {
+  Bot,
+  FileCheck2,
+  Landmark,
+  ListChecks,
+  ReceiptText,
+  ShieldCheck,
+} from "lucide-react";
 import { AppShell } from "@/components/shell";
-import { PageHeader, Panel, PrimaryLink, StatusPill } from "@/components/ui";
-import { demoAgent } from "@/lib/demo-data";
+import {
+  ApiLabel,
+  PageHeader,
+  Panel,
+  PrimaryLink,
+  StatusPill,
+} from "@/components/ui";
+import {
+  cleanverseIntegrations,
+  demoAgent,
+} from "@/lib/demo-data";
 
 const steps = [
-  ["AI Agent Payment Request", "PayBot Alpha asks to spend from a controlled wallet."],
-  ["A-Pass Identity Verification", "The builder identity and wallet are bound through Cleanverse."],
-  ["A-Token Rule Check", "The demo reads A-Token rules and paused status."],
-  ["Validator Compliance", "The wallet is verified against the payment contract."],
-  ["Payment Approval", "A transaction record is simulated and written to local audit logs."],
+  ["Start Demo", "Launch the compliance flow for PayBot Alpha."],
+  ["Verify Agent", "Bind builder identity and wallet through A-Pass."],
+  ["Request Payment", "Create the payment intent before checks run."],
+  ["Run Compliance Check", "Evaluate A-Token rules, limits, AML risk, and validator status."],
+  ["Authorize Payment", "Approve only after each control passes."],
+  ["View Audit Trail", "Show every decision in a transparent local log."],
+];
+
+const features = [
+  {
+    title: "Verified Agent Identity",
+    detail: "A-Pass binds the builder, agent ID, and wallet before funds can move.",
+    Icon: FileCheck2,
+  },
+  {
+    title: "Compliance-Native Payments",
+    detail:
+      "A-Token rules and validator checks decide whether the agent is allowed to pay.",
+    Icon: ListChecks,
+  },
+  {
+    title: "Transparent Audit Logs",
+    detail:
+      "Every verification, request, rule check, and simulated Monad record is visible.",
+    Icon: ReceiptText,
+  },
 ];
 
 export default function Home() {
@@ -19,10 +56,10 @@ export default function Home() {
           <PageHeader
             eyebrow="Hackathon demo"
             title="AgentPay Guardian"
-            description="A compliance-first payment console for AI agents that need identity verification, token authorization, validator checks, and a complete audit story before moving funds."
+            description="AgentPay Guardian protects AI agent payments with verified identity, compliance checks, and transparent audit trails."
           />
           <div className="flex flex-wrap gap-3">
-            <PrimaryLink href="/verification">Start verification</PrimaryLink>
+            <PrimaryLink href="/verification">Start Compliance Demo</PrimaryLink>
             <StatusPill ok label="Server-side Cleanverse routes" />
           </div>
         </div>
@@ -37,20 +74,39 @@ export default function Home() {
                 <p className="text-sm text-slate-400">{demoAgent.agentId}</p>
               </div>
             </div>
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-                <FileCheck2 className="mb-3 h-5 w-5 text-electric" />
-                <p className="text-sm text-slate-400">Builder</p>
-                <p className="font-semibold">{demoAgent.builderName}</p>
+                <p className="text-sm text-slate-400">Status</p>
+                <div className="mt-2">
+                  <StatusPill ok label="Verified" />
+                </div>
               </div>
               <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-                <ShieldCheck className="mb-3 h-5 w-5 text-electric" />
-                <p className="text-sm text-slate-400">Chain</p>
-                <p className="font-semibold">Monad</p>
+                <p className="text-sm text-slate-400">Risk Level</p>
+                <div className="mt-2">
+                  <StatusPill ok label={demoAgent.riskLevel} />
+                </div>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
+                <p className="text-sm text-slate-400">A-Pass</p>
+                <div className="mt-2">
+                  <StatusPill ok label="Active" />
+                </div>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
+                <p className="text-sm text-slate-400">A-Token Permission</p>
+                <div className="mt-2">
+                  <StatusPill ok label="Valid" />
+                </div>
               </div>
               <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
                 <Landmark className="mb-3 h-5 w-5 text-electric" />
-                <p className="text-sm text-slate-400">Request</p>
+                <p className="text-sm text-slate-400">Transaction Limit</p>
+                <p className="font-semibold">${demoAgent.transactionLimit}</p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
+                <ShieldCheck className="mb-3 h-5 w-5 text-electric" />
+                <p className="text-sm text-slate-400">Demo Request</p>
                 <p className="font-semibold">{demoAgent.amount} {demoAgent.currency}</p>
               </div>
             </div>
@@ -65,6 +121,50 @@ export default function Home() {
             <p className="mt-2 text-sm leading-6 text-slate-400">{detail}</p>
           </div>
         ))}
+      </section>
+      <section className="mt-10 grid gap-4 md:grid-cols-3">
+        {features.map(({ title, detail, Icon }) => (
+          <Panel key={title}>
+            <Icon className="mb-4 h-6 w-6 text-electric" />
+            <h2 className="text-lg font-semibold text-white">{title}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-300">{detail}</p>
+          </Panel>
+        ))}
+      </section>
+      <section className="mt-10">
+        <Panel>
+          <div className="mb-5">
+            <h2 className="text-xl font-semibold text-white">
+              Cleanverse API Integration
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              The demo labels each integration honestly so judges can see what
+              is live, simulated, or pending.
+            </p>
+          </div>
+          <div className="grid gap-3 md:grid-cols-4">
+            {cleanverseIntegrations.map(([name, detail, status]) => (
+              <div key={name} className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
+                <h3 className="font-semibold text-white">{name}</h3>
+                <p className="mt-2 min-h-12 text-sm leading-6 text-slate-400">
+                  {detail}
+                </p>
+                <ApiLabel label={status} />
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </section>
+      <section className="mt-10 rounded-lg border border-white/10 bg-white/[0.03] p-6">
+        <h2 className="text-xl font-semibold text-white">
+          Why AgentPay Guardian Matters
+        </h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-slate-300">
+          AI agents are becoming financial actors. Without identity,
+          authorization, compliance checks, and audit trails, autonomous payments
+          can create fraud and regulatory risk. AgentPay Guardian provides the
+          trust layer needed for safe AI agent finance.
+        </p>
       </section>
     </AppShell>
   );

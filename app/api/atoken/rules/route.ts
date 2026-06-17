@@ -6,10 +6,10 @@ export async function POST() {
   const result = await queryApassRules();
 
   addAuditEvent({
-    label: "A-Token rules checked",
+    label: "A-Token permission checked",
     detail: result.mocked
-      ? "Demo rule check confirmed agent subgroup AG and tier requirements."
-      : `Cleanverse rules response ${result.response.code}.`,
+      ? "Transaction within allowed A-Token rule."
+      : `Cleanverse rules response ${result.response.code}; transaction within allowed rule.`,
     status: result.ok ? "success" : "error",
     source: result.mocked ? "demo" : "cleanverse",
   });

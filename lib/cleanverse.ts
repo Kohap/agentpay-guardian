@@ -127,7 +127,7 @@ export function generateApass(override = false) {
         operate: "update",
         address: demoAgent.walletAddress,
         chain: demoAgent.chain,
-        txHash: "0xdemo-apass-record",
+        txHash: demoAgent.transactionHash,
       },
     },
     { encrypted: true }

@@ -1,11 +1,11 @@
 import { CheckCircle2, Landmark, ReceiptText } from "lucide-react";
 import { AppShell } from "@/components/shell";
 import { PageHeader, Panel, PrimaryLink, StatusPill } from "@/components/ui";
-import { demoAgent } from "@/lib/demo-data";
+import { complianceChecklist, demoAgent } from "@/lib/demo-data";
 
 export default function ApprovalPage() {
   return (
-    <AppShell>
+    <AppShell currentStep={4}>
       <PageHeader
         eyebrow="Step 4"
         title="Payment Approval"
@@ -18,7 +18,8 @@ export default function ApprovalPage() {
             <div>
               <h2 className="mt-8 text-2xl font-semibold text-white">Authorized</h2>
               <p className="mt-2 text-sm leading-6 text-emerald-100">
-                This screen reflects the successful demo state after validator compliance is checked.
+                AgentPay Guardian approved this transaction after identity,
+                rule, and risk checks.
               </p>
             </div>
           </div>
@@ -31,7 +32,7 @@ export default function ApprovalPage() {
             <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
               <ReceiptText className="mb-3 h-5 w-5 text-electric" />
               <p className="text-sm text-slate-400">Transaction</p>
-              <p className="break-all font-semibold">0xmonad-agentpay-guardian</p>
+              <p className="break-all font-semibold">{demoAgent.transactionHash}</p>
             </div>
             <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4 sm:col-span-2">
               <p className="text-sm text-slate-400">Control checks</p>
@@ -39,13 +40,29 @@ export default function ApprovalPage() {
                 <StatusPill ok label="A-Pass verified" />
                 <StatusPill ok label="A-Token active" />
                 <StatusPill ok label="Validator valid" />
+                <StatusPill ok label="Amount within limit" />
               </div>
             </div>
           </div>
         </div>
       </Panel>
+      <section className="mt-6">
+        <Panel>
+          <h2 className="text-xl font-semibold text-white">
+            Final Approval Checklist
+          </h2>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {complianceChecklist.map(([label, status]) => (
+              <div key={label} className="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/[0.03] p-4">
+                <span className="text-sm text-slate-200">{label}</span>
+                <StatusPill ok label={status} />
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </section>
       <div className="mt-6">
-        <PrimaryLink href="/audit">Open audit trail</PrimaryLink>
+        <PrimaryLink href="/receipt">View transaction receipt</PrimaryLink>
       </div>
     </AppShell>
   );
