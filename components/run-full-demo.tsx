@@ -9,10 +9,17 @@ export function RunFullDemoButton() {
   async function runFullDemo() {
     setLoading(true);
     try {
-      await fetch("/api/demo/run-full", {
+      const response = await fetch("/api/demo/run-full", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
+      const json = await response.json();
+      if (Array.isArray(json.events)) {
+        window.localStorage.setItem(
+          "agentpay_guardian_audit_events",
+          JSON.stringify(json.events)
+        );
+      }
       window.location.href = "/audit";
     } finally {
       setLoading(false);

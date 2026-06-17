@@ -28,7 +28,18 @@ export function AuditList() {
     setLoading(true);
     const response = await fetch("/api/audit", { cache: "no-store" });
     const json = await response.json();
-    setEvents(json.events);
+    const browserEvents = window.localStorage.getItem(
+      "agentpay_guardian_audit_events"
+    );
+    const parsedBrowserEvents = browserEvents
+      ? (JSON.parse(browserEvents) as AuditEvent[])
+      : [];
+    const serverEvents = json.events as AuditEvent[];
+    const shouldUseBrowserEvents =
+      parsedBrowserEvents.length > serverEvents.length ||
+      parsedBrowserEvents.some((event) => event.label === "Payment authorized");
+
+    setEvents(shouldUseBrowserEvents ? parsedBrowserEvents : serverEvents);
     setLoading(false);
   }
 

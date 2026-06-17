@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { addAuditEvent, resetAuditEvents } from "@/lib/audit-store";
+import { addAuditEvent, getAuditEvents, resetAuditEvents } from "@/lib/audit-store";
 import {
   generateApassWithRetry,
   queryApassPaused,
@@ -77,6 +77,7 @@ export async function POST() {
   return NextResponse.json({
     ok: validator.ok && valid,
     steps: { apass, rules, paused, validator },
+    events: await getAuditEvents(),
     next: "/audit",
   });
 }
