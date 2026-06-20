@@ -113,10 +113,138 @@ function StatusChip({
   );
 }
 
+function MobileMonitor() {
+  return (
+    <section className="grid gap-4 md:hidden">
+      <div>
+        <h1 className="text-2xl font-semibold text-[#dce4e5]">
+          Active Monitor
+        </h1>
+        <p className="mt-1 text-sm leading-6 text-[#b9cacb]">
+          Real-time oversight of autonomous transactions.
+        </p>
+      </div>
+
+      <section className="relative overflow-hidden rounded-xl border border-[#1e293b] bg-[#0f172a] p-5 shadow-lg">
+        <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#00dbe9]/10 blur-[64px]" />
+        <div className="relative z-10">
+          <div className="mb-4 flex items-start justify-between">
+            <div className="flex items-center gap-2">
+              <Bot className="h-5 w-5 text-[#00dbe9]" />
+              <h2 className="font-mono text-xs font-bold uppercase tracking-[0.12em] text-[#00dbe9]">
+                PayBot Alpha
+              </h2>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded border border-[#00dbe9]/30 bg-[#00dbe9]/10 px-2 py-1 font-mono text-[11px] text-[#00dbe9]">
+              <span className="h-2 w-2 rounded-full bg-[#00dbe9]" />
+              Live
+            </span>
+          </div>
+
+          <div className="rounded-lg border-l-2 border-[#00dbe9] bg-[#122131] p-4">
+            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-[#b9cacb]">
+              Executing Request
+            </p>
+            <p className="mt-2 text-sm leading-6 text-[#d4e4fa]">
+              &quot;Authorize {demoAgent.amount} {demoAgent.currency} payment
+              to {demoAgent.merchant}.&quot;
+            </p>
+            <div className="mt-3 flex items-center justify-between border-t border-[#3b494b]/60 pt-3">
+              <span className="font-mono text-[11px] text-[#b9cacb]">
+                Est. Value
+              </span>
+              <span className="font-mono text-[12px] font-bold text-[#00dbe9]">
+                {demoAgent.amount} {demoAgent.currency}
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-5">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-[#b9cacb]">
+                Risk Assessment
+              </span>
+              <span className="font-mono text-[11px] text-[#00dbe9]">
+                Scanning... 65%
+              </span>
+            </div>
+            <div className="h-1.5 overflow-hidden rounded-full bg-[#122131]">
+              <div className="relative h-full w-[65%] rounded-full bg-[#00dbe9]">
+                <span className="absolute bottom-0 right-0 top-0 w-4 animate-pulse bg-white/30" />
+              </div>
+            </div>
+            <p className="mt-3 flex items-center gap-2 font-mono text-[11px] text-[#b9cacb]">
+              <ListChecks className="h-4 w-4" />
+              Checking SOC2 compliance bounds...
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <details className="overflow-hidden rounded-xl border border-[#1e293b] bg-[#0f172a] shadow-lg">
+        <summary className="flex cursor-pointer list-none items-center justify-between p-5">
+          <div className="flex items-center gap-2">
+            <ListChecks className="h-5 w-5 text-[#b9cacb]" />
+            <h2 className="font-mono text-xs font-bold uppercase tracking-[0.12em] text-[#d4e4fa]">
+              Pre-Auth Checklist
+            </h2>
+          </div>
+          <span className="text-[#b9cacb]">+</span>
+        </summary>
+        <div className="grid gap-3 px-5 pb-5">
+          {[
+            ["Agent identity verified", "A-Pass record active.", true],
+            ["Budget allocation check", "Transaction below limit.", true],
+            ["Managerial override", "Required for high-risk payments.", false],
+          ].map(([label, detail, checked]) => (
+            <div
+              key={label as string}
+              className={`flex items-start gap-3 rounded p-2 ${
+                checked ? "" : "border border-[#3b494b] bg-[#273647]/30"
+              }`}
+            >
+              <span
+                className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border ${
+                  checked
+                    ? "border-[#00dbe9] bg-[#00dbe9] text-[#051424]"
+                    : "border-[#3b494b] bg-[#1e293b]"
+                }`}
+              >
+                {checked && <CheckCircle2 className="h-3.5 w-3.5" />}
+              </span>
+              <span>
+                <span className="block text-sm text-[#d4e4fa]">
+                  {label as string}
+                </span>
+                <span
+                  className={`font-mono text-[11px] ${
+                    checked ? "text-[#00dbe9]" : "text-[#ffb4ab]"
+                  }`}
+                >
+                  {detail as string}
+                </span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </details>
+
+      <div className="grid gap-2 pt-2">
+        <RunFullDemoButton className="w-full justify-center text-sm" />
+        <p className="text-center font-mono text-[11px] text-[#b9cacb]">
+          Simulates a complete transaction lifecycle.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   return (
     <AppShell currentStep={1}>
-      <section className="grid gap-8 pb-4 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+      <MobileMonitor />
+
+      <section className="hidden gap-8 pb-4 md:grid lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
         <div className="flex flex-col gap-6">
           <div>
             <p className="mb-4 font-mono text-xs font-bold uppercase tracking-[0.18em] text-[#00dbe9]">
@@ -217,7 +345,7 @@ export default function Home() {
         </GlassCard>
       </section>
 
-      <section className="my-8 overflow-x-auto rounded-lg border border-white/10 bg-[#1e293b]/35 p-4 backdrop-blur-xl">
+      <section className="my-8 hidden overflow-x-auto rounded-lg border border-white/10 bg-[#1e293b]/35 p-4 backdrop-blur-xl md:block">
         <div className="flex min-w-[850px] items-center justify-between gap-3">
           {pipeline.map((step, index) => (
             <div key={step} className="flex flex-1 items-center gap-3">
