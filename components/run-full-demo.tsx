@@ -30,7 +30,7 @@ export function RunFullDemoButton() {
     <button
       onClick={runFullDemo}
       disabled={loading}
-      className="inline-flex min-h-11 items-center gap-2 rounded-md border border-emerald-300/50 bg-emerald-300 px-4 py-2.5 text-sm font-semibold text-ink hover:bg-emerald-200 disabled:cursor-not-allowed disabled:opacity-70"
+      className="inline-flex min-h-11 items-center gap-2 rounded bg-[#00f0ff] px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-[0.1em] text-[#00363a] shadow-[0_0_18px_rgba(0,240,255,0.24)] hover:bg-[#7df4ff] disabled:cursor-not-allowed disabled:opacity-70"
     >
       <PlayCircle className="h-4 w-4" />
       {loading ? "Running full demo..." : "Run Full Demo"}

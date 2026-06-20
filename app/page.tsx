@@ -4,35 +4,23 @@ import {
   BadgeCheck,
   Bot,
   CheckCircle2,
-  FileCheck2,
+  CircleDollarSign,
+  Database,
+  Fingerprint,
   Gauge,
   Landmark,
   ListChecks,
   ReceiptText,
+  Shield,
   ShieldCheck,
-  Wallet,
 } from "lucide-react";
 import { AppShell } from "@/components/shell";
 import { RunFullDemoButton } from "@/components/run-full-demo";
-import {
-  ApiLabel,
-  PageHeader,
-  Panel,
-  PrimaryLink,
-  StatusPill,
-} from "@/components/ui";
 import {
   cleanverseIntegrations,
   complianceChecklist,
   demoAgent,
 } from "@/lib/demo-data";
-
-const agentStats = [
-  { label: "Status", value: "Verified", tone: "success" as const },
-  { label: "Risk Level", value: demoAgent.riskLevel, tone: "success" as const },
-  { label: "A-Pass", value: "Active", tone: "success" as const },
-  { label: "A-Token Permission", value: "Valid", tone: "success" as const },
-];
 
 const pipeline = [
   "Agent Verification",
@@ -42,11 +30,18 @@ const pipeline = [
   "Audit Trail",
 ];
 
+const agentStats = [
+  { label: "Status", value: "Verified", Icon: BadgeCheck },
+  { label: "Risk Level", value: demoAgent.riskLevel, Icon: ShieldCheck },
+  { label: "A-Pass", value: "Active", Icon: CheckCircle2 },
+  { label: "A-Token Permission", value: "Valid", Icon: ListChecks },
+];
+
 const features = [
   {
     title: "Verified Agent Identity",
     detail: "A-Pass binds the builder, agent ID, and wallet before funds can move.",
-    Icon: FileCheck2,
+    Icon: Fingerprint,
   },
   {
     title: "Compliance-Native Payments",
@@ -62,244 +57,375 @@ const features = [
   },
 ];
 
+function GlassCard({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <section
+      className={`rounded-lg border border-white/10 bg-[#1e293b]/45 p-5 shadow-[inset_0_0_18px_rgba(0,240,255,0.06),0_0_36px_rgba(0,240,255,0.05)] backdrop-blur-xl ${className}`}
+    >
+      {children}
+    </section>
+  );
+}
+
+function DataSlot({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded border border-[#3b494b] bg-[#080f10]/75 p-3">
+      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#b9cacb]">
+        {label}
+      </p>
+      <p className="mt-2 break-words text-sm font-semibold leading-5 text-[#dce4e5]">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function StatusChip({
+  label,
+  tone = "success",
+}: {
+  label: string;
+  tone?: "success" | "warning" | "mock";
+}) {
+  const styles = {
+    success: "border-emerald-400/35 bg-emerald-400/10 text-emerald-300",
+    warning: "border-amber-400/35 bg-amber-400/10 text-amber-300",
+    mock: "border-cyan-300/25 bg-[#0d1515] text-[#b9cacb]",
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] ${styles[tone]}`}
+    >
+      {tone === "warning" ? (
+        <AlertTriangle className="h-3 w-3" />
+      ) : (
+        <CheckCircle2 className="h-3 w-3" />
+      )}
+      {label}
+    </span>
+  );
+}
+
 export default function Home() {
   return (
     <AppShell currentStep={1}>
-      <section className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-        <div>
-          <PageHeader
-            eyebrow="Compliance command center"
-            title="AgentPay Guardian"
-            description="AgentPay Guardian protects AI agent payments with verified identity, compliance checks, and transparent audit trails."
-          />
-          <div className="flex flex-wrap gap-3">
+      <section className="grid gap-8 pb-4 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+        <div className="flex flex-col gap-6">
+          <div>
+            <p className="mb-4 font-mono text-xs font-bold uppercase tracking-[0.18em] text-[#00dbe9]">
+              Compliance Command Center
+            </p>
+            <h1 className="max-w-3xl text-5xl font-bold leading-tight tracking-normal text-[#dce4e5] md:text-6xl">
+              AgentPay Guardian
+            </h1>
+            <p className="mt-5 max-w-xl text-lg leading-8 text-[#b9cacb]">
+              AgentPay Guardian protects AI agent payments with verified
+              identity, compliance checks, and transparent audit trails.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
             <RunFullDemoButton />
-            <PrimaryLink href="/audit">View Audit Trail</PrimaryLink>
-            <StatusPill label="Demo mode active" tone="warning" />
+            <Link
+              href="/audit"
+              className="inline-flex min-h-11 items-center gap-2 rounded border border-[#dbfcff]/70 px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-[0.1em] text-[#dbfcff] hover:bg-[#dbfcff] hover:text-[#00363a]"
+            >
+              View Audit Trail
+              <ReceiptText className="h-4 w-4" />
+            </Link>
+            <StatusChip label="Demo mode active" tone="warning" />
           </div>
         </div>
-        <Panel>
-          <div className="flex flex-col gap-5">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <span className="flex h-12 w-12 items-center justify-center rounded-lg border border-electric/30 bg-electric/10 text-electric">
+
+        <GlassCard className="relative overflow-hidden">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[#00f0ff]/10 blur-[100px]" />
+          <div className="relative z-10">
+            <div className="mb-8 flex items-start justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded border border-[#3b494b] bg-[#2e3637] text-[#dbfcff]">
                   <Bot className="h-6 w-6" />
                 </span>
                 <div>
-                  <h2 className="text-2xl font-semibold text-white">
+                  <h2 className="text-2xl font-semibold text-[#dce4e5]">
                     {demoAgent.agentName}
                   </h2>
-                  <p className="text-sm text-slate-400">{demoAgent.agentId}</p>
+                  <p className="font-mono text-xs uppercase tracking-[0.14em] text-[#b9cacb]">
+                    {demoAgent.agentId}
+                  </p>
                 </div>
               </div>
-              <StatusPill ok label="Low Risk" />
+              <StatusChip label="Low Risk" />
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-                <Wallet className="mb-3 h-5 w-5 text-electric" />
-                <p className="text-sm text-slate-400">Current payment request</p>
-                <p className="mt-1 text-xl font-semibold text-white">
+
+            <div className="mb-6 grid gap-4 md:grid-cols-2">
+              <div className="rounded border border-[#3b494b] bg-[#151d1e] p-4">
+                <div className="mb-2 flex items-center gap-2 text-[#b9cacb]">
+                  <CircleDollarSign className="h-4 w-4" />
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.1em]">
+                    Current payment request
+                  </p>
+                </div>
+                <p className="text-2xl font-semibold text-[#dce4e5]">
                   {demoAgent.amount} {demoAgent.currency}
                 </p>
-                <p className="mt-1 text-sm text-slate-400">
+                <p className="mt-1 text-sm text-[#b9cacb]">
                   to {demoAgent.merchant}
                 </p>
               </div>
-              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-                <Gauge className="mb-3 h-5 w-5 text-electric" />
-                <p className="text-sm text-slate-400">Transaction Limit</p>
-                <p className="mt-1 text-xl font-semibold text-white">
+              <div className="rounded border border-[#3b494b] bg-[#151d1e] p-4">
+                <div className="mb-2 flex items-center gap-2 text-[#b9cacb]">
+                  <Gauge className="h-4 w-4" />
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.1em]">
+                    Transaction Limit
+                  </p>
+                </div>
+                <p className="text-2xl font-semibold text-[#dce4e5]">
                   ${demoAgent.transactionLimit}
                 </p>
-                <p className="mt-1 text-sm text-slate-400">
+                <p className="mt-1 text-sm text-[#b9cacb]">
                   enforced before approval
                 </p>
               </div>
             </div>
-            <div className="grid gap-3 sm:grid-cols-4">
-              {agentStats.map((item) => (
+
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {agentStats.map(({ label, value, Icon }) => (
                 <div
-                  key={item.label}
-                  className="rounded-lg border border-white/10 bg-white/[0.03] p-3"
+                  key={label}
+                  className="rounded border border-[#3b494b] bg-[#0d1515] p-3"
                 >
-                  <p className="text-xs text-slate-400">{item.label}</p>
-                  <div className="mt-2">
-                    <StatusPill label={item.value} tone={item.tone} />
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-[#b9cacb]">
+                    {label}
+                  </p>
+                  <div className="mt-2 flex items-center gap-1.5 text-emerald-300">
+                    <Icon className="h-3.5 w-3.5" />
+                    <span className="font-mono text-[11px] font-semibold">
+                      {value}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        </Panel>
+        </GlassCard>
       </section>
 
-      <section className="mt-8 rounded-lg border border-white/10 bg-white/[0.03] p-4">
-        <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-center">
+      <section className="my-8 overflow-x-auto rounded-lg border border-white/10 bg-[#1e293b]/35 p-4 backdrop-blur-xl">
+        <div className="flex min-w-[850px] items-center justify-between gap-3">
           {pipeline.map((step, index) => (
             <div key={step} className="flex flex-1 items-center gap-3">
-              <div className="flex min-h-16 flex-1 items-center gap-3 rounded-lg border border-emerald-400/25 bg-emerald-400/10 px-3 py-3">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-emerald-300 text-xs font-bold text-ink">
+              <Link
+                href={
+                  [
+                    "/verification",
+                    "/payment",
+                    "/compliance",
+                    "/approval",
+                    "/audit",
+                  ][index]
+                }
+                className={`flex min-h-12 flex-1 items-center gap-3 rounded border px-3 ${
+                  index === 0
+                    ? "border-[#00f0ff]/50 bg-[#00f0ff]/10 text-[#dbfcff]"
+                    : "border-[#3b494b] bg-[#2e3637]/45 text-[#b9cacb]"
+                }`}
+              >
+                <span
+                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-sm text-xs font-bold ${
+                    index === 0
+                      ? "bg-[#00f0ff] text-[#00363a]"
+                      : "bg-[#2e3637] text-[#b9cacb]"
+                  }`}
+                >
                   {index + 1}
                 </span>
-                <span className="text-sm font-semibold text-white">{step}</span>
-              </div>
+                <span className="font-mono text-[11px] font-bold uppercase tracking-[0.08em]">
+                  {step}
+                </span>
+              </Link>
               {index < pipeline.length - 1 && (
-                <span className="hidden text-slate-500 md:block">&rarr;</span>
+                <span className="text-[#3b494b]">-&gt;</span>
               )}
             </div>
           ))}
         </div>
       </section>
 
-      <section className="mt-8 grid gap-5 xl:grid-cols-[0.92fr_1.26fr_0.82fr]">
-        <Panel>
-          <div className="mb-5 flex items-center justify-between gap-3">
+      <section className="grid gap-6 lg:grid-cols-12">
+        <GlassCard className="lg:col-span-3">
+          <div className="mb-6 flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-2xl font-semibold text-[#dce4e5]">
                 Agent Profile
               </h2>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-sm leading-6 text-[#b9cacb]">
                 Identity, wallet, and transaction controls.
               </p>
             </div>
-            <ShieldCheck className="h-6 w-6 text-electric" />
+            <Shield className="h-6 w-6 text-[#dbfcff]" />
           </div>
-          <div className="space-y-3">
-            {[
-              ["Builder", demoAgent.builderName],
-              ["Wallet", demoAgent.walletAddress],
-              ["Chain", "Monad"],
-              ["Purpose", demoAgent.purpose],
-            ].map(([label, value]) => (
-              <div
-                key={label}
-                className="rounded-lg border border-white/10 bg-white/[0.03] p-4"
-              >
-                <p className="text-xs uppercase tracking-[0.14em] text-slate-500">
-                  {label}
-                </p>
-                <p className="mt-2 break-words text-sm font-semibold text-white">
-                  {value}
-                </p>
-              </div>
-            ))}
+          <div className="grid gap-3">
+            <DataSlot label="Builder" value={demoAgent.builderName} />
+            <DataSlot label="Wallet" value={demoAgent.walletAddress} />
+            <DataSlot label="Chain" value="Monad" />
+            <DataSlot label="Purpose" value={demoAgent.purpose} />
           </div>
-        </Panel>
+        </GlassCard>
 
-        <Panel>
-          <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <GlassCard className="lg:col-span-6">
+          <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-2xl font-semibold text-[#dce4e5]">
                 Compliance Checklist
               </h2>
-              <p className="mt-1 text-sm leading-6 text-slate-400">
+              <p className="mt-1 text-sm leading-6 text-[#b9cacb]">
                 Payment approval stays blocked until every control passes.
               </p>
             </div>
-            <StatusPill ok label="All checks passed" />
+            <StatusChip label="All checks passed" />
           </div>
           <div className="grid gap-3 md:grid-cols-2">
-            {complianceChecklist.map(([label, status]) => (
+            {complianceChecklist.map(([label, status], index) => (
               <div
                 key={label}
-                className="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/[0.03] p-4"
+                className={`flex items-center justify-between gap-3 rounded border border-[#3b494b] bg-[#151d1e] p-4 ${
+                  index === complianceChecklist.length - 1 ? "md:col-span-2" : ""
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-300" />
-                  <span className="text-sm font-medium text-white">{label}</span>
+                  <span className="text-sm font-medium text-[#dce4e5]">
+                    {label}
+                  </span>
                 </div>
-                <StatusPill ok label={status} />
+                <StatusChip label={status} />
               </div>
             ))}
           </div>
-        </Panel>
+        </GlassCard>
 
-        <Panel>
-          <div className="mb-5">
-            <h2 className="text-xl font-semibold text-white">
+        <GlassCard className="lg:col-span-3">
+          <div className="mb-6">
+            <h2 className="text-2xl font-semibold text-[#dce4e5]">
               Cleanverse API Integration
             </h2>
-            <p className="mt-1 text-sm leading-6 text-slate-400">
+            <p className="mt-1 text-sm leading-6 text-[#b9cacb]">
               Clear labels show what is live, simulated, or pending.
             </p>
           </div>
           <div className="space-y-3">
-            {cleanverseIntegrations.map(([name, detail, status]) => (
-              <div
-                key={name}
-                className="rounded-lg border border-white/10 bg-white/[0.03] p-4"
-              >
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <h3 className="font-semibold text-white">{name}</h3>
-                  <BadgeCheck className="h-4 w-4 text-electric" />
+            {cleanverseIntegrations.map(([name, detail, status]) => {
+              const isMock = status === "Demo Mock";
+
+              return (
+                <div
+                  key={name}
+                  className="relative overflow-hidden rounded border border-[#3b494b] bg-[#151d1e] p-4"
+                >
+                  <span
+                    className={`absolute bottom-0 left-0 top-0 w-1 ${
+                      isMock ? "bg-amber-300/70" : "bg-emerald-300/70"
+                    }`}
+                  />
+                  <div className="pl-2">
+                    <div className="mb-2 flex items-start justify-between gap-3">
+                      <h3 className="font-semibold text-[#dce4e5]">{name}</h3>
+                      {isMock ? (
+                        <Database className="h-4 w-4 text-[#b9cacb]" />
+                      ) : (
+                        <BadgeCheck className="h-4 w-4 text-emerald-300" />
+                      )}
+                    </div>
+                    <p className="mb-3 text-sm leading-6 text-[#b9cacb]">
+                      {detail}
+                    </p>
+                    <StatusChip
+                      label={status}
+                      tone={isMock ? "mock" : "success"}
+                    />
+                  </div>
                 </div>
-                <p className="mb-3 text-sm leading-6 text-slate-400">{detail}</p>
-                <ApiLabel label={status} />
-              </div>
-            ))}
+              );
+            })}
           </div>
-        </Panel>
+        </GlassCard>
       </section>
 
-      <section className="mt-8 grid gap-5 lg:grid-cols-2">
-        <div className="rounded-lg border border-amber-400/30 bg-amber-400/10 p-5">
-          <div className="flex items-start justify-between gap-4">
-            <AlertTriangle className="h-8 w-8 text-amber-200" />
-            <StatusPill label="Before compliance" tone="warning" />
+      <section className="my-8 grid gap-6 md:grid-cols-2">
+        <GlassCard className="border-l-4 border-l-amber-400">
+          <div className="mb-5 flex items-start justify-between gap-4">
+            <AlertTriangle className="h-8 w-8 text-amber-300" />
+            <StatusChip label="Before compliance" tone="warning" />
           </div>
-          <h2 className="mt-6 text-2xl font-semibold text-white">
+          <h2 className="text-2xl font-semibold text-[#dce4e5]">
             Payment Blocked
           </h2>
-          <p className="mt-2 text-sm leading-6 text-amber-100">
+          <p className="mt-2 text-sm leading-6 text-[#b9cacb]">
             Agent must complete A-Pass verification and compliance checks before
             payment.
           </p>
-        </div>
-        <div className="rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-5">
-          <div className="flex items-start justify-between gap-4">
-            <Landmark className="h-8 w-8 text-emerald-200" />
-            <StatusPill ok label="After compliance" />
+        </GlassCard>
+
+        <GlassCard className="border-l-4 border-l-emerald-400 bg-gradient-to-r from-emerald-400/10 to-[#1e293b]/35">
+          <div className="mb-5 flex items-start justify-between gap-4">
+            <Landmark className="h-8 w-8 text-emerald-300" />
+            <StatusChip label="After compliance" />
           </div>
-          <h2 className="mt-6 text-2xl font-semibold text-white">
+          <h2 className="text-2xl font-semibold text-[#dce4e5]">
             Payment Authorized
           </h2>
-          <p className="mt-2 text-sm leading-6 text-emerald-100">
+          <p className="mt-2 text-sm leading-6 text-[#b9cacb]">
             AgentPay Guardian approved this transaction after identity, rule,
             and risk checks.
           </p>
-        </div>
+        </GlassCard>
       </section>
 
-      <section className="mt-8 grid gap-4 md:grid-cols-3">
+      <section className="mb-8 grid gap-6 md:grid-cols-3">
         {features.map(({ title, detail, Icon }) => (
-          <Panel key={title}>
-            <Icon className="mb-4 h-6 w-6 text-electric" />
-            <h2 className="text-lg font-semibold text-white">{title}</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-300">{detail}</p>
-          </Panel>
+          <GlassCard key={title} className="border-t-[#dbfcff]/20">
+            <Icon className="mb-4 h-7 w-7 text-[#dbfcff]" />
+            <h2 className="text-xl font-semibold text-[#dce4e5]">{title}</h2>
+            <p className="mt-3 text-sm leading-6 text-[#b9cacb]">{detail}</p>
+          </GlassCard>
         ))}
       </section>
 
-      <section className="mt-8 rounded-lg border border-white/10 bg-white/[0.03] p-6">
-        <h2 className="text-xl font-semibold text-white">
-          Why AgentPay Guardian Matters
-        </h2>
-        <p className="mt-3 max-w-4xl text-sm leading-7 text-slate-300">
-          AI agents are becoming financial actors. Without identity,
-          authorization, compliance checks, and audit trails, autonomous payments
-          can create fraud and regulatory risk. AgentPay Guardian provides the
-          trust layer needed for safe AI agent finance.
-        </p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <PrimaryLink href="/compliance">Review Compliance</PrimaryLink>
+      <GlassCard className="mb-4 flex flex-col gap-6 border-b-[#00f0ff]/35 bg-gradient-to-br from-[#192122] to-[#0d1515] p-6 md:flex-row md:items-center md:justify-between">
+        <div className="max-w-3xl">
+          <h2 className="text-2xl font-semibold text-[#dce4e5]">
+            Why AgentPay Guardian Matters
+          </h2>
+          <p className="mt-3 text-sm leading-7 text-[#b9cacb]">
+            AI agents are becoming financial actors. Without identity,
+            authorization, compliance checks, and audit trails, autonomous
+            payments can create fraud and regulatory risk. AgentPay Guardian
+            provides the trust layer needed for safe AI agent finance.
+          </p>
+        </div>
+        <div className="flex shrink-0 flex-wrap gap-3">
+          <Link
+            href="/compliance"
+            className="inline-flex min-h-11 items-center gap-2 rounded bg-[#00f0ff] px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-[0.1em] text-[#00363a] hover:bg-[#7df4ff]"
+          >
+            Review Compliance
+            <ListChecks className="h-4 w-4" />
+          </Link>
           <Link
             href="/receipt"
-            className="inline-flex min-h-11 items-center rounded-md border border-white/15 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
+            className="inline-flex min-h-11 items-center rounded border border-[#3b494b] px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-[0.1em] text-[#dce4e5] hover:bg-[#2e3637]"
           >
             View Receipt
           </Link>
         </div>
-      </section>
+      </GlassCard>
     </AppShell>
   );
 }
