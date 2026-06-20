@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
@@ -22,11 +23,11 @@ import {
 import type { AuditEvent } from "@/lib/audit-store";
 
 const auditNav = [
-  { label: "Dashboard", Icon: Activity },
-  { label: "Agent Registry", Icon: Bot },
-  { label: "Risk Engine", Icon: Gavel },
-  { label: "Transaction Log", Icon: FileText, active: true },
-  { label: "Admin Panel", Icon: Settings },
+  { label: "Dashboard", href: "/", Icon: Activity },
+  { label: "Agent Registry", href: "/verification", Icon: Bot },
+  { label: "Risk Engine", href: "/compliance", Icon: Gavel },
+  { label: "Transaction Log", href: "/audit", Icon: FileText, active: true },
+  { label: "Admin Panel", href: "/approval", Icon: Settings },
 ];
 
 function statusClass(status: AuditEvent["status"]) {
@@ -77,6 +78,7 @@ function sourceLabel(source: AuditEvent["source"]) {
 export function AuditList() {
   const [events, setEvents] = useState<AuditEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [creatingAudit, setCreatingAudit] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -100,6 +102,43 @@ export function AuditList() {
   useEffect(() => {
     load();
   }, []);
+
+  async function startComplianceAudit() {
+    setCreatingAudit(true);
+    try {
+      const response = await fetch("/api/audit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          label: "Compliance audit started",
+          detail:
+            "Manual compliance audit opened from the Audit Console sidebar.",
+          status: "info",
+        }),
+      });
+      const json = (await response.json()) as { event?: AuditEvent };
+
+      if (json.event) {
+        setEvents((currentEvents) => {
+          const nextEvents = [json.event!, ...currentEvents];
+          window.localStorage.setItem(
+            "agentpay_guardian_audit_events",
+            JSON.stringify(nextEvents)
+          );
+          return nextEvents;
+        });
+      }
+    } finally {
+      setCreatingAudit(false);
+    }
+  }
+
+  function scrollToPanel(id: string) {
+    document.getElementById(id)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
 
   const riskEvents = useMemo(
     () =>
@@ -127,9 +166,10 @@ export function AuditList() {
         </div>
 
         <nav className="space-y-2">
-          {auditNav.map(({ label, Icon, active }) => (
-            <div
+          {auditNav.map(({ label, href, Icon, active }) => (
+            <Link
               key={label}
+              href={href}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
                 active
                   ? "bg-[#3f465c] text-[#adb4ce]"
@@ -140,30 +180,47 @@ export function AuditList() {
                 className={`h-4 w-4 ${active ? "text-[#00dbe9]" : "text-[#849495]"}`}
               />
               {label}
-            </div>
+            </Link>
           ))}
         </nav>
 
         <div className="mt-8 border-t border-[#3b494b] pt-4">
-          <button className="mb-4 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded bg-[#00f0ff] px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-[#00363a] hover:bg-[#7df4ff]">
-            <Plus className="h-4 w-4" />
-            New Compliance Audit
+          <button
+            onClick={startComplianceAudit}
+            disabled={creatingAudit}
+            className="mb-4 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded bg-[#00f0ff] px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-[#00363a] hover:bg-[#7df4ff] disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {creatingAudit ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
+            {creatingAudit ? "Starting Audit" : "New Compliance Audit"}
           </button>
           <div className="space-y-2 text-sm text-[#b9cacb]">
-            <div className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-[#273647]">
+            <button
+              onClick={() => scrollToPanel("system-status")}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left hover:bg-[#273647]"
+            >
               <Activity className="h-4 w-4 text-[#849495]" />
               System Status
-            </div>
-            <div className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-[#273647]">
+            </button>
+            <button
+              onClick={() => scrollToPanel("audit-help")}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left hover:bg-[#273647]"
+            >
               <HelpCircle className="h-4 w-4 text-[#849495]" />
               Help Center
-            </div>
+            </button>
           </div>
         </div>
       </aside>
 
       <div className="min-w-0 space-y-5">
-        <section className="relative overflow-hidden rounded-lg border border-[#3b494b] bg-[#0d1c2d] p-6 md:p-8">
+        <section
+          id="system-status"
+          className="relative scroll-mt-24 overflow-hidden rounded-lg border border-[#3b494b] bg-[#0d1c2d] p-6 md:p-8"
+        >
           <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(rgba(0,240,255,0.16)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.16)_1px,transparent_1px)] [background-size:28px_28px]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_45%,rgba(0,240,255,0.18),transparent_24rem)]" />
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -333,7 +390,7 @@ export function AuditList() {
           </div>
         </section>
 
-        <section className="grid gap-3 md:grid-cols-3">
+        <section id="audit-help" className="grid scroll-mt-24 gap-3 md:grid-cols-3">
           {[
             ["Audit Log", "Demo Mock"],
             ["Monad Transaction", "Simulated Record"],
